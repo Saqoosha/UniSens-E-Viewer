@@ -10,7 +10,7 @@ export default props => {
       id: "basic-bar"
     },
     stroke: {
-      width: 2
+      width: [2, 1]
     },
     xaxis: {
       type: 'numeric',
@@ -26,23 +26,42 @@ export default props => {
 
   const [series, setSeries] = useState([])
 
+  const onLoadComplete = ({ data, errors, meta }) => {
+    data.shift() // skip header
+    console.log(data[1], errors[0], meta)
+    let wattage = data.map(d => [d[3], d[8] || 0])
+    let average = wattage.map((v, i) => {
+      let j = i
+      let sum = 0
+      for (; j < Math.min(i + 20, wattage.length); j++) {
+        sum += wattage[j][1]
+      }
+      // console.log(i,j,sum)
+      return [v[0], sum / (j - i)]
+    })
+    let i = wattage.length - 1
+    for (; i >= 0; i--) {
+      if (wattage[i][1] > 20.0) {
+        break
+      }
+    }
+    wattage = wattage.slice(0, i + 1)
+    average = average.slice(0, i + 1)
+    // console.log(wattage, average)
+    setSeries([{
+      name: "Wattage (Average)",
+      data: average
+    }, {
+      name: "Wattage (Actual)",
+      data: wattage
+    }])
+  }
+
   // useEffect(() => {
-  //   Papa.parse("2019-09-21 SM UniLog 2 Datei 0004.txt", {
+  //   Papa.parse("2019-09-21 SM UniLog 2 Datei 0003.txt", {
   //     download: true,
   //     dynamicTyping: true,
-  //     complete: ({ data, errors, meta }) => {
-  //       data.shift() // skip header
-  //       console.log(data[1], errors[0], meta)
-  //       let W = data.map(d => [d[3], d[8] || 0])
-  //       let i = W.length - 1
-  //       for (; i >= 0; i--) {
-  //         if (W[i][1] > 10.0) {
-  //           break
-  //         }
-  //       }
-  //       W = W.slice(0, i + 1)
-  //       setSeries([{ name: "W", data: W }])
-  //     }
+  //     complete: onLoadComplete
   //   })
   // }, [])
 
@@ -50,20 +69,7 @@ export default props => {
     console.log(acceptedFiles)
     Papa.parse(acceptedFiles[0], {
       dynamicTyping: true,
-      complete: ({ data, errors, meta }) => {
-        data.shift() // skip header
-        console.log(data[1], errors[0], meta)
-        let W = data.map(d => [d[3], d[8] || 0])
-        let i = W.length - 1
-        for (; i >= 0; i--) {
-          if (W[i][1] > 20.0) {
-            break
-          }
-        }
-        W = W.slice(0, i + 1)
-        console.log(W)
-        setSeries([{ name: "W", data: W }])
-      }
+      complete: onLoadComplete
     })
   }, [])
   const { getRootProps, isDragActive } = useDropzone({ onDrop, accept: '.txt' })
