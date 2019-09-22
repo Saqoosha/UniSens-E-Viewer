@@ -19,7 +19,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron": "electron ."
+    "electron": "electron .",
+    "build-mac": "electron-packager . UniSens-E-Viewer --platform=darwin --arch=x64 --overwrite"
   },
   "eslintConfig": {
     "extends": "react-app"
