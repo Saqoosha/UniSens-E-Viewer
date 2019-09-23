@@ -52,7 +52,7 @@ export default props => {
     tooltip: {
       x: {
         show: true,
-        formatter: value => value
+        formatter: value => value.toFixed(2)
       }
     }
   })
@@ -98,10 +98,9 @@ export default props => {
         start = average[i][0]
       } else if (over && w <= 1800) {
         over = false
-        const end = average[i - 1][0]
-        ann.push({
+        let end = average[i - 1][0]
+        const a = {
           x: start,
-          x2: end,
           borderColor: "#f00",
           label: {
             borderColor: "#f00",
@@ -109,9 +108,14 @@ export default props => {
               color: "#fff",
               background: "#f00"
             },
-            text: `${start.toFixed(2)} - ${end.toFixed(2)}`
+            text: start.toFixed(2)
           }
-        })
+        }
+        if (start !== end) {
+          a.x2 = end
+          a.label.text = `${start.toFixed(2)} - ${end.toFixed(2)}`
+        }
+        ann.push(a)
       }
     }
     console.log(ann)
