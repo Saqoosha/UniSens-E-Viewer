@@ -24,9 +24,23 @@ export default props => {
     },
     yaxis: {
       min: 0,
-      max: 2400,
-      tickAmount: 4,
+      max: 2500,
+      tickAmount: 5,
       decimalsInFloat: 0,
+    },
+    annotations: {
+      yaxis: [{
+        y: 1800,
+        borderColor: "#ff0000",
+        label: {
+          borderColor: "#ff0000",
+          style: {
+            color: "#fff",
+            background: "#ff0000"
+          },
+          text: "1800W"
+        }
+      }]
     }
   })
 
