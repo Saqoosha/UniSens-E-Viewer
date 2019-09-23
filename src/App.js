@@ -21,6 +21,12 @@ export default props => {
     xaxis: {
       type: 'numeric',
       tickAmount: 10,
+      min: 0,
+      max: 100,
+      title: {
+        text: 'Time (seconds)',
+        offsetY: -10
+      }
     },
     yaxis: {
       min: 0,
@@ -48,7 +54,7 @@ export default props => {
 
   const onLoadComplete = ({ data, errors, meta }) => {
     data.shift() // skip header
-    console.log(data[1], errors[0], meta)
+    // console.log(data[1], errors[0], meta)
     let wattage = data.map(d => [d[3], d[8] || 0])
     let average = wattage.map((v, i) => {
       let j = i
@@ -75,6 +81,14 @@ export default props => {
       name: "Wattage (Actual)",
       data: wattage
     }])
+
+    const n = Math.ceil(i / 200)
+    setOptions({
+      xaxis: {
+        tickAmount: n,
+        max: n * 10,
+      }
+    })
   }
 
   // useEffect(() => {
@@ -86,7 +100,7 @@ export default props => {
   // }, [])
 
   const onDrop = useCallback(acceptedFiles => {
-    console.log(acceptedFiles)
+    // console.log(acceptedFiles)
     setOptions({
       title: {
         text: acceptedFiles[0].name,
