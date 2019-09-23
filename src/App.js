@@ -47,6 +47,12 @@ export default props => {
           text: "1800W"
         }
       }]
+    },
+    tooltip: {
+      x: {
+        show: true,
+        formatter: value => value
+      }
     }
   })
 
