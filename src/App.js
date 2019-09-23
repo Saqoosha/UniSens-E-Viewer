@@ -7,7 +7,13 @@ import * as Papa from "papaparse"
 export default props => {
   const [options, setOptions] = useState({
     chart: {
-      id: "basic-bar"
+      id: "basic-bar",
+      zoom: {
+        enabled: false
+      },
+    },
+    title: {
+      align: "center"
     },
     stroke: {
       width: [2, 1]
@@ -67,6 +73,11 @@ export default props => {
 
   const onDrop = useCallback(acceptedFiles => {
     console.log(acceptedFiles)
+    setOptions({
+      title: {
+        text: acceptedFiles[0].name,
+      }
+    })
     Papa.parse(acceptedFiles[0], {
       dynamicTyping: true,
       complete: onLoadComplete
