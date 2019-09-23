@@ -37,12 +37,13 @@ export default props => {
     annotations: {
       yaxis: [{
         y: 1800,
-        borderColor: "#ff0000",
+        borderColor: "#f00",
         label: {
-          borderColor: "#ff0000",
+          offsetX: -15,
+          borderColor: "#f00",
           style: {
             color: "#fff",
-            background: "#ff0000"
+            background: "#f00"
           },
           text: "1800W"
         }
@@ -71,15 +72,14 @@ export default props => {
       // console.log(i,j,sum)
       return [v[0], sum / (j - i)]
     })
-    let i = wattage.length - 1
-    for (; i >= 0; i--) {
-      if (wattage[i][1] > 20.0) {
+    let n = wattage.length - 1
+    for (; n >= 0; n--) {
+      if (wattage[n][1] > 20.0) {
         break
       }
     }
-    wattage = wattage.slice(0, i + 1)
-    average = average.slice(0, i + 1)
-    // console.log(wattage, average)
+    wattage = wattage.slice(0, n + 1)
+    average = average.slice(0, n + 1)
     setSeries([{
       name: "Wattage (Average)",
       data: average
@@ -88,17 +88,46 @@ export default props => {
       data: wattage
     }])
 
-    const n = Math.ceil(i / 200)
+    const ann = []
+    let over = false
+    let start = 0
+    for (let i = 0; i < n; i++) {
+      const w = average[i][1]
+      if (!over && w > 1800) {
+        over = true
+        start = average[i][0]
+      } else if (over && w <= 1800) {
+        over = false
+        const end = average[i - 1][0]
+        ann.push({
+          x: start,
+          x2: end,
+          borderColor: "#f00",
+          label: {
+            borderColor: "#f00",
+            style: {
+              color: "#fff",
+              background: "#f00"
+            },
+            text: `${start.toFixed(2)} - ${end.toFixed(2)}`
+          }
+        })
+      }
+    }
+    console.log(ann)
+
+    n = Math.ceil(n / 200)
     setOptions({
       xaxis: {
         tickAmount: n,
         max: n * 10,
-      }
+      },
+      annotations: { xaxis: ann }
     })
   }
 
   // useEffect(() => {
-  //   Papa.parse("2019-09-21 SM UniLog 2 Datei 0003.txt", {
+  //   Papa.parse("a.txt", {
   //     download: true,
   //     dynamicTyping: true,
   //     complete: onLoadComplete
