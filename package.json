@@ -1,11 +1,13 @@
 {
   "name": "unisens-e-viewer",
+  "description": "UniSens-E Data Viewer for DCL",
   "version": "0.1.0",
   "private": true,
-  "main": "src/electron-starter.js",
+  "main": "src/electron.js",
   "dependencies": {
     "apexcharts": "^3.8.6",
     "electron-window-state": "^5.0.3",
+    "fsevents": "^1.2.9",
     "papaparse": "^5.1.0",
     "react": "^16.9.0",
     "react-apexcharts": "^1.3.3",
@@ -14,13 +16,30 @@
     "react-scripts": "3.1.2"
   },
   "homepage": "./",
+  "author": {
+    "name": "Saqoosha"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "build-mac": "electron-packager . UniSens-E-Viewer --platform=darwin --arch=x64 --overwrite"
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --mac --win"
+  },
+  "build": {
+    "appId": "sh.saqoo.unisenseviewer",
+    "productName": "UniSens-E Viewer",
+    "files": [
+      "./build/**/*",
+      "./src/electron.js"
+    ],
+    "win": {
+      "target": "zip"
+    },
+    "extends": null,
+    "npmRebuild": false
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -39,6 +58,6 @@
   },
   "devDependencies": {
     "electron": "^6.0.10",
-    "electron-packager": "^14.0.6"
+    "electron-builder": "^21.2.0"
   }
 }
