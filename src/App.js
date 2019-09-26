@@ -60,7 +60,7 @@ export default props => {
   const [series, setSeries] = useState([])
 
   const onLoadComplete = ({ data, errors, meta }) => {
-    data.shift() // skip header
+    data = data.filter(d => d[0] === "$UL2")
     // console.log(data[1], errors[0], meta)
     let wattage = data.map(d => [d[3], d[8] || 0])
     let average = wattage.map((v, i) => {
@@ -118,7 +118,6 @@ export default props => {
         ann.push(a)
       }
     }
-    console.log(ann)
 
     n = Math.ceil(n / 200)
     setOptions({
