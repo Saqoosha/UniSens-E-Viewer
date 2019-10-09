@@ -16,8 +16,9 @@ export default props => {
       align: "center"
     },
     stroke: {
-      width: [2, 1]
+      width: [2, 1, 2, 2]
     },
+    colors: ['#038efb', '#02e396', '#ed9dcc', '#ffb782'],
     xaxis: {
       type: 'numeric',
       tickAmount: 10,
@@ -28,12 +29,57 @@ export default props => {
         offsetY: -10
       }
     },
-    yaxis: {
+    yaxis: [{
+      seriesName: "Watts (Average)",
       min: 0,
       max: 2500,
       tickAmount: 5,
       decimalsInFloat: 0,
-    },
+      axisTicks: {
+        show: true
+      },
+      axisBorder: {
+        show: true,
+      },
+      title: {
+        text: "Watts"
+      }
+    }, {
+      seriesName: "Watts (Actual)",
+      show: false,
+    }, {
+      seriesName: "Volts",
+      min: 16,
+      max: 26,
+      tickAmount: 5,
+      decimalsInFloat: 0,
+      opposite: true,
+      axisTicks: {
+        show: true
+      },
+      axisBorder: {
+        show: true,
+      },
+      title: {
+        text: "Volts"
+      }
+    }, {
+      seriesName: "Amps",
+      min: 0,
+      max: 150,
+      tickAmount: 6,
+      decimalsInFloat: 0,
+      opposite: true,
+      axisTicks: {
+        show: true
+      },
+      axisBorder: {
+        show: true,
+      },
+      title: {
+        text: "Amps"
+      }
+    }],
     annotations: {
       yaxis: [{
         y: 1800,
@@ -51,6 +97,10 @@ export default props => {
     },
     tooltip: {
       x: {
+        show: true,
+        formatter: value => value.toFixed(2)
+      },
+      y: {
         show: true,
         formatter: value => value.toFixed(2)
       }
@@ -78,14 +128,24 @@ export default props => {
         break
       }
     }
+    let volts = data.map(d => [d[3], d[4] || 0])
+    let amps = data.map(d => [d[3], d[5] || 0])
+    volts = volts.slice(0, n + 1)
+    amps = amps.slice(0, n + 1)
     wattage = wattage.slice(0, n + 1)
     average = average.slice(0, n + 1)
     setSeries([{
-      name: "Wattage (Average)",
+      name: "Watts (Average)",
       data: average
     }, {
-      name: "Wattage (Actual)",
+      name: "Watts (Actual)",
       data: wattage
+    }, {
+      name: "Volts",
+      data: volts,
+    }, {
+      name: "Amps",
+      data: amps
     }])
 
     const ann = []
