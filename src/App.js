@@ -106,11 +106,11 @@ export default props => {
     tooltip: {
       x: {
         show: true,
-        formatter: value => value.toFixed(2)
+        formatter: value => (value || 0).toFixed(2)
       },
       y: {
         show: true,
-        formatter: value => value.toFixed(2)
+        formatter: value => (value || 0).toFixed(2)
       }
     }
   })
@@ -188,7 +188,7 @@ export default props => {
 
     const ann = []
     let max = 0
-    let maxi = 0
+    let maxi = -1
     let over = false
     let start = 0
     for (let i = 0; i < n; i++) {
@@ -222,21 +222,24 @@ export default props => {
         maxi = i
       }
     }
-    ann.push({
-      x: average[maxi][0],
-      borderColor: "#038efb",
-      label: {
+    console.log(maxi, max, average)
+    if (maxi >= 0) {
+      ann.push({
+        x: average[maxi][0],
         borderColor: "#038efb",
-        style: {
-          color: "#fff",
-          background: "#038efb"
-        },
-        text: max.toFixed(2)
-      }
-    })
+        label: {
+          borderColor: "#038efb",
+          style: {
+            color: "#fff",
+            background: "#038efb"
+          },
+          text: max.toFixed(2)
+        }
+      })
+    }
 
     max = 0
-    maxi = 0
+    maxi = -1
     for (let i = 0; i < average2.length; i++) {
       const w = average2[i][1]
       if (w > max) {
@@ -244,18 +247,20 @@ export default props => {
         maxi = i
       }
     }
-    ann.push({
-      x: average2[maxi][0],
-      borderColor: "#b766ff",
-      label: {
+    if (maxi >= 0) {
+      ann.push({
+        x: average2[maxi][0],
         borderColor: "#b766ff",
-        style: {
-          color: "#fff",
-          background: "#b766ff"
-        },
-        text: max.toFixed(2)
-      }
-    })
+        label: {
+          borderColor: "#b766ff",
+          style: {
+            color: "#fff",
+            background: "#b766ff"
+          },
+          text: max.toFixed(2)
+        }
+      })
+    }
 
     n = Math.ceil(n / 200)
     setOptions({
