@@ -8,9 +8,9 @@ export default props => {
   const [options, setOptions] = useState({
     chart: {
       id: "basic-bar",
-      zoom: {
-        enabled: false
-      },
+      // zoom: {
+      //   enabled: false
+      // },
     },
     title: {
       align: "center"
@@ -107,12 +107,25 @@ export default props => {
     }
   })
 
+  function findLast(array, predicate) {
+    for (let i = array.length - 1; i >= 0; --i) {
+      const x = array[i];
+      if (predicate(x)) {
+        return i;
+      }
+    }
+  }
+
   const [series, setSeries] = useState([])
 
-  const onLoadComplete = ({ data, errors, meta }) => {
+  const onLoadComplete = useCallback(({ data, errors, meta }) => {
     data = data.filter(d => d[0] === "$UL2")
-    // console.log(data[1], errors[0], meta)
-    let wattage = data.map(d => [d[3], d[8] || 0])
+    const firstIndex = data.findIndex(d => d[8] > 500)
+    const lastIndex = findLast(data, (d) => d[8] > 500)
+    console.log(firstIndex, lastIndex, data)
+    data = data.slice(Math.max(0, firstIndex - 10), lastIndex + 100)
+    const startTime = data[0][3]
+    let wattage = data.map(d => [d[3] - startTime, d[8] || 0])
     let average = wattage.map((v, i) => {
       let j = i
       let sum = 0
@@ -128,8 +141,8 @@ export default props => {
         break
       }
     }
-    let volts = data.map(d => [d[3], d[4] || 0])
-    let amps = data.map(d => [d[3], d[5] || 0])
+    let volts = data.map(d => [d[3] - startTime, d[4] || 0])
+    let amps = data.map(d => [d[3] - startTime, d[5] || 0])
     volts = volts.slice(0, n + 1)
     amps = amps.slice(0, n + 1)
     wattage = wattage.slice(0, n + 1)
@@ -187,15 +200,15 @@ export default props => {
       },
       annotations: { xaxis: ann }
     })
-  }
+  })
 
   // useEffect(() => {
-  //   Papa.parse("a.txt", {
+  //   Papa.parse("2019-10-18 SM UniLog 2 Datei 0001.txt", {
   //     download: true,
   //     dynamicTyping: true,
   //     complete: onLoadComplete
   //   })
-  // }, [])
+  // }, [onLoadComplete])
 
   const onDrop = useCallback(acceptedFiles => {
     // console.log(acceptedFiles)
@@ -208,7 +221,7 @@ export default props => {
       dynamicTyping: true,
       complete: onLoadComplete
     })
-  }, [])
+  }, [onLoadComplete])
   const { getRootProps, isDragActive } = useDropzone({ onDrop, accept: '.txt' })
 
   return (
