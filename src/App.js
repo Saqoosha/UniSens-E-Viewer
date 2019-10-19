@@ -16,9 +16,10 @@ export default props => {
       align: "center"
     },
     stroke: {
-      width: [2, 1, 2, 2]
+      width: [2, 2, 1, 2, 2],
+      curve: ['smooth', 'stepline', 'smooth', 'smooth', 'smooth'],
     },
-    colors: ['#038efb', '#02e396', '#ed9dcc', '#ffb782'],
+    colors: ['#038efb', '#b766ff', '#02e396', '#ed9dcc', '#ffb782'],
     xaxis: {
       type: 'numeric',
       tickAmount: 10,
@@ -45,7 +46,14 @@ export default props => {
         text: "Watts"
       }
     }, {
+      seriesName: "Watts (Average2)",
+      min: 0,
+      max: 2500,
+      show: false,
+    }, {
       seriesName: "Watts (Actual)",
+      min: 0,
+      max: 2500,
       show: false,
     }, {
       seriesName: "Volts",
@@ -122,25 +130,37 @@ export default props => {
     data = data.filter(d => d[0] === "$UL2")
     const firstIndex = data.findIndex(d => d[8] > 500)
     const lastIndex = findLast(data, (d) => d[8] > 500)
-    console.log(firstIndex, lastIndex, data)
     data = data.slice(Math.max(0, firstIndex - 10), lastIndex + 100)
     const startTime = data[0][3]
+
     let wattage = data.map(d => [d[3] - startTime, d[8] || 0])
+
     let average = wattage.map((v, i) => {
       let j = i
       let sum = 0
       for (; j < Math.min(i + 20, wattage.length); j++) {
         sum += wattage[j][1]
       }
-      // console.log(i,j,sum)
       return [v[0], sum / (j - i)]
     })
+
     let n = wattage.length - 1
     for (; n >= 0; n--) {
       if (wattage[n][1] > 20.0) {
         break
       }
     }
+
+    let m = Math.floor(wattage.length / 20)
+    let average2 = []
+    for (let i = 0; i < m; i++) {
+      let sum = 0
+      for (let j = 0; j < 20; j++) {
+        sum += wattage[i * 20 + j][1]
+      }
+      average2.push([wattage[i * 20][0], sum / 20])
+    }
+
     let volts = data.map(d => [d[3] - startTime, d[4] || 0])
     let amps = data.map(d => [d[3] - startTime, d[5] || 0])
     volts = volts.slice(0, n + 1)
@@ -150,6 +170,9 @@ export default props => {
     setSeries([{
       name: "Watts (Average)",
       data: average
+    }, {
+      name: "Watts (Average2)",
+      data: average2
     }, {
       name: "Watts (Actual)",
       data: wattage
@@ -162,6 +185,8 @@ export default props => {
     }])
 
     const ann = []
+    let max = 0
+    let maxi = 0
     let over = false
     let start = 0
     for (let i = 0; i < n; i++) {
@@ -190,7 +215,23 @@ export default props => {
         }
         ann.push(a)
       }
+      if (w > max) {
+        max = w
+        maxi = i
+      }
     }
+    ann.push({
+      x: average[maxi][0],
+      borderColor: "#038efb",
+      label: {
+        borderColor: "#038efb",
+        style: {
+          color: "#fff",
+          background: "#038efb"
+        },
+        text: max.toFixed(2)
+      }
+    })
 
     n = Math.ceil(n / 200)
     setOptions({
@@ -203,12 +244,13 @@ export default props => {
   })
 
   // useEffect(() => {
+  //   console.log('useEffect')
   //   Papa.parse("2019-10-18 SM UniLog 2 Datei 0001.txt", {
   //     download: true,
   //     dynamicTyping: true,
   //     complete: onLoadComplete
   //   })
-  // }, [onLoadComplete])
+  // })
 
   const onDrop = useCallback(acceptedFiles => {
     // console.log(acceptedFiles)
@@ -222,7 +264,7 @@ export default props => {
       complete: onLoadComplete
     })
   }, [onLoadComplete])
-  const { getRootProps, isDragActive } = useDropzone({ onDrop, accept: '.txt' })
+  const { getRootProps } = useDropzone({ onDrop, accept: '.txt' })
 
   return (
     <div className="app" {...getRootProps()}>

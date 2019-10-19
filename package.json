@@ -1,7 +1,7 @@
 {
   "name": "unisens-e-viewer",
   "description": "UniSens-E Data Viewer for DCL",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "main": "src/electron.js",
   "dependencies": {
