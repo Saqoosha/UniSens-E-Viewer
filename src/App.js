@@ -128,8 +128,10 @@ export default props => {
 
   const onLoadComplete = useCallback(({ data, errors, meta }) => {
     data = data.filter(d => d[0] === "$UL2")
-    const firstIndex = data.findIndex(d => d[8] > 500)
-    const lastIndex = findLast(data, (d) => d[8] > 500)
+    let firstIndex = data.findIndex(d => d[8] > 500) || 0
+    if (firstIndex < 0) firstIndex = 0
+    const lastIndex = findLast(data, (d) => d[8] > 500) || data.length - 1
+    // console.log(firstIndex, lastIndex, data)
     data = data.slice(Math.max(0, firstIndex - 10), lastIndex + 100)
     const startTime = data[0][3]
 
@@ -228,6 +230,28 @@ export default props => {
         style: {
           color: "#fff",
           background: "#038efb"
+        },
+        text: max.toFixed(2)
+      }
+    })
+
+    max = 0
+    maxi = 0
+    for (let i = 0; i < average2.length; i++) {
+      const w = average2[i][1]
+      if (w > max) {
+        max = w
+        maxi = i
+      }
+    }
+    ann.push({
+      x: average2[maxi][0],
+      borderColor: "#b766ff",
+      label: {
+        borderColor: "#b766ff",
+        style: {
+          color: "#fff",
+          background: "#b766ff"
         },
         text: max.toFixed(2)
       }
