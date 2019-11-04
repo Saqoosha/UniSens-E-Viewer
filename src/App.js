@@ -16,8 +16,8 @@ export default props => {
       align: "center"
     },
     stroke: {
-      width: [2, 2, 1, 2, 2],
-      curve: ['smooth', 'stepline', 'smooth', 'smooth', 'smooth'],
+      width: [2, 1, 1, 2, 2],
+      curve: ['straight', 'stepline', 'straight', 'straight', 'straight'],
     },
     colors: ['#038efb', '#b766ff', '#02e396', '#ed9dcc', '#ffb782'],
     xaxis: {
