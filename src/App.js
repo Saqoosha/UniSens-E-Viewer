@@ -135,7 +135,7 @@ export default props => {
     data = data.slice(Math.max(0, firstIndex - 10), lastIndex + 100)
     const startTime = data[0][3]
 
-    let wattage = data.map(d => [d[3] - startTime, d[8] || 0])
+    let wattage = data.map(d => [d[3] - startTime, (d[4] || 0) * (d[5] || 0)])
 
     let average = wattage.map((v, i) => {
       let j = i
